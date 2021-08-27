@@ -1,12 +1,12 @@
-import fs from 'fs'
-import 'isomorphic-unfetch'
-import { Client as GraphQLClient, gql } from '@urql/core'
-import * as dotenv from 'dotenv'
-import { exit } from 'process'
+import fs from 'fs';
+import 'isomorphic-unfetch';
+import { Client as GraphQLClient, gql } from '@urql/core';
+import * as dotenv from 'dotenv';
+import { exit } from 'process';
 
-dotenv.config()
+dotenv.config();
 
-const PAGE_SIZE = 100
+const PAGE_SIZE = 100;
 
 // Queries
 
@@ -27,7 +27,7 @@ const PROPOSALS_QUERY = gql`
       }
     }
   }
-`
+`;
 
 const VOTES_QUERY = gql`
   query Votes($proposal: String!, $first: Int!, $skip: Int!) {
@@ -42,36 +42,36 @@ const VOTES_QUERY = gql`
       }
     }
   }
-`
+`;
 // Types
 
 type Proposal = {
-  id: string
-}
+  id: string;
+};
 
 type ProposalsResponse = {
-  proposals: Proposal[]
-}
+  proposals: Proposal[];
+};
 
 type Vote = {
-  id: string
-}
+  id: string;
+};
 
 type VotesResponse = {
-  votes: Vote[]
-}
+  votes: Vote[];
+};
 
 async function getProposals(client: GraphQLClient, spaces: Array<string>) {
   try {
-    let fetchNextPage = true
-    let skip = 0
+    let fetchNextPage = true;
+    let skip = 0;
 
     while (fetchNextPage) {
-      fetchNextPage = await getProposalsPage(client, spaces, skip)
-      skip += PAGE_SIZE
+      fetchNextPage = await getProposalsPage(client, spaces, skip);
+      skip += PAGE_SIZE;
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
@@ -82,62 +82,65 @@ async function getProposalsPage(
 ): Promise<boolean> {
   const response = await client
     .query(PROPOSALS_QUERY, { spaces, first: PAGE_SIZE, skip })
-    .toPromise()
+    .toPromise();
 
-  const data: ProposalsResponse = response.data
+  const data: ProposalsResponse = response.data;
 
   if (!data.proposals.length) {
-    return false
+    return false;
   }
 
   for (const proposal of data.proposals) {
     const proposals = fs.readFileSync('./data/proposals.txt', {
       encoding: 'utf8',
       flag: 'a+',
-    })
-    const duplicateProposal = proposals.includes(proposal.id)
+    });
+    const duplicateProposal = proposals.includes(proposal.id);
     if (duplicateProposal) {
-      console.log(`Duplicate proposal    : ${proposal.id}`)
+      console.log(`Duplicate proposal    : ${proposal.id}`);
     } else {
-      fs.appendFileSync('./data/proposals.txt', proposal.id + '\n')
-      console.log(`Added proposal        : ${proposal.id} to proposals.txt`)
+      fs.appendFileSync('./data/proposals.txt', proposal.id + '\n');
+      console.log(`Added proposal        : ${proposal.id} to proposals.txt`);
     }
   }
-  return true
+  return true;
 }
 
 async function getVotes(client: GraphQLClient) {
   try {
-    let fetchNextPage = true
-    let skip = 0
+    let fetchNextPage = true;
+    let skip = 0;
 
     while (fetchNextPage) {
-      fetchNextPage = await getVotesPage(client, skip)
-      skip += PAGE_SIZE
+      fetchNextPage = await getVotesPage(client, skip);
+      skip += PAGE_SIZE;
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
-async function getVotesPage(client: GraphQLClient, skip: number): Promise<boolean> {
+async function getVotesPage(
+  client: GraphQLClient,
+  skip: number,
+): Promise<boolean> {
   try {
     const proposals = fs
       .readFileSync('./data/proposals.txt', { encoding: 'utf8', flag: 'a+' })
-      .split('\n')
-    proposals.pop() // remove final new line
-    console.log(proposals)
+      .split('\n');
+    proposals.pop(); // remove final new line
+    console.log(proposals);
 
     // Here  we query for the proposal votes
     // Note - if no votes have been created, it will just return an empty object
     for (const proposal of proposals) {
       const response = await client
         .query(VOTES_QUERY, { proposal, first: PAGE_SIZE, skip })
-        .toPromise()
-      const data: VotesResponse = response.data
+        .toPromise();
+      const data: VotesResponse = response.data;
 
       if (!data.votes.length) {
-        return false
+        return false;
       }
 
       // Once we grab the proposal, from this end point, we need to parse out all of the
@@ -146,43 +149,43 @@ async function getVotesPage(client: GraphQLClient, skip: number): Promise<boolea
         const votes = fs.readFileSync('./data/votes.txt', {
           encoding: 'utf8',
           flag: 'a+',
-        })
-        const duplicateVote = votes.includes(vote.id)
+        });
+        const duplicateVote = votes.includes(vote.id);
         if (duplicateVote) {
-          console.log(`Duplicate vote        : ${vote.id}`)
+          console.log(`Duplicate vote        : ${vote.id}`);
         } else {
-          fs.appendFileSync('./data/votes.txt', vote.id + '\n')
-          console.log(`Added vote            : ${vote.id} to votes.txt`)
+          fs.appendFileSync('./data/votes.txt', vote.id + '\n');
+          console.log(`Added vote            : ${vote.id} to votes.txt`);
         }
       }
     }
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 async function scrapeSnapshot() {
-  let url: string
-  let client: GraphQLClient
-  let spaces: string[]
+  let url: string;
+  let client: GraphQLClient;
+  let spaces: string[];
 
   try {
-    url = process.env.GRAPHQL_ENDPOINT
-    client = new GraphQLClient({ url })
+    url = process.env.GRAPHQL_ENDPOINT;
+    client = new GraphQLClient({ url });
   } catch (error) {
-    console.log('Missing env variable $GRAPHQL_ENDPOINT')
-    return exit(1)
+    console.log('Missing env variable $GRAPHQL_ENDPOINT');
+    return exit(1);
   }
 
   try {
-    spaces = process.env.SPACES.split(',')
+    spaces = process.env.SPACES.split(',');
   } catch (error) {
-    console.log('Missing env variable $SPACES')
-    return exit(1)
+    console.log('Missing env variable $SPACES');
+    return exit(1);
   }
 
-  await getProposals(client, spaces)
-  await getVotes(client)
+  await getProposals(client, spaces);
+  await getVotes(client);
 }
 
-scrapeSnapshot()
+scrapeSnapshot();

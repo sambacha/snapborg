@@ -1,23 +1,22 @@
-FROM node:14
+FROM node:14-alpine3.14 AS stage1
 
 # Copy and build the project
 WORKDIR /app
-COPY src/ ./src/
-COPY package.json ./
-COPY yarn.lock ./
-COPY tsconfig.json ./
-COPY Makefile ./
+COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
+
+RUN npm install
+
+COPY . /app/
 
 # Install packages
-RUN yarn
+RUN npx tsc -b
 
-# Compile
-RUN yarn build
+FROM node:14-alpine3.14
 
-# Clean up the source directory
-RUN rm -rf /src
+COPY --from=stage1 /app /app
+WORKDIR /app
 
-# Tools
-RUN yarn global add @graphprotocol/ipfs-sync
+RUN npm i -g @graphprotocol/ipfs-sync
 
 CMD ["make", "scrape"]

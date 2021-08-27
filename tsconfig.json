@@ -6,7 +6,15 @@
     "target": "ES2018",
     "outDir": "dist",
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "declaration": true,
+		"declarationMap": true,
+		"noEmit": true,
+		"strict": true,
+		"noEmitOnError": true,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+		"noImplicitReturns": true
   },
   "exclude": ["dist", "node_modules"],
   "include": [

@@ -1,0 +1,7 @@
+.git
+.github/
+dist/
+build/
+docs/
+Dockerfile
+docker-compose.yml
