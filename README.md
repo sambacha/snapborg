@@ -1,10 +1,21 @@
 
 <img src="./docs/snapborg.svg">
 
-Scrapes snapshot to pin the IPFS files to your own node.
 
+> Create complete governance backups from snapshot.org to where ever you wish
 
-## Quickstart
+#### Requirements
+
+- nodejs 14+
+- IPFS daemon
+
+###### Install
+
+```bash
+npm install
+```
+
+### Usage
 
 > you can ignore the Makefile and Dockerfile no reason to use them
 
@@ -20,24 +31,7 @@ Scrapes snapshot to pin the IPFS files to your own node.
 ```
 3. Examine the directory `data/` 
 
-
-
-# How to Run
-
-Copy and rename `.env.example` to `.env` and replace the variables with their
-corresponding values.
-
-```sh
-cp .env.example .env
-```
-
-Scrape Snapshot API and sync files to IPFS
-
-```sh
-make scrape
-```
-
-# How it works
+### How it works
 
 - `scrape.ts` hits snapshots API to get all the proposals
 - It writes the file proposals.txt to use for `ipfs-sync`
@@ -47,3 +41,8 @@ make scrape
 - All the scripts are de-dupped so that this could run on a VM in the cloud,
   ping it once a day, and it will only append to the txt files. Then ipfs-sync
   already skips over dupes.
+
+
+### License 
+
+MIT
