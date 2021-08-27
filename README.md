@@ -1,4 +1,5 @@
-# Snapshot Governance
+
+<img src="./docs/snapborg.svg">
 
 Scrapes snapshot to pin the IPFS files to your own node.
 
