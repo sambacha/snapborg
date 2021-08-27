@@ -2,6 +2,25 @@
 
 Scrapes snapshot to pin the IPFS files to your own node.
 
+
+## Quickstart
+
+> you can ignore the Makefile and Dockerfile no reason to use them
+
+0. Install via `npm/yarn`, startup your local IPFS daemon
+
+> Note there is a script `check-ipfs.sh` if you are unsure if your IPFS daemon is working!
+
+1. configure the `run.sh` with your parameters, the default is setup to Yearn Finance's snapshot (ychad.eth)
+
+2. Run the command
+```bash
+./run.sh
+```
+3. Examine the directory `data/` 
+
+
+
 # How to Run
 
 Copy and rename `.env.example` to `.env` and replace the variables with their

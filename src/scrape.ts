@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'fs-extra';
 import 'isomorphic-unfetch';
 import { Client as GraphQLClient, gql } from '@urql/core';
 import * as dotenv from 'dotenv';
@@ -123,13 +123,17 @@ async function getVotes(client: GraphQLClient) {
 async function getVotesPage(
   client: GraphQLClient,
   skip: number,
-): Promise<boolean> {
+): 
+Promise<boolean>
+
+{
+  
   try {
-    const proposals = fs
-      .readFileSync('./data/proposals.txt', { encoding: 'utf8', flag: 'a+' })
+    const proposals = fs.readFileSync('./data/proposals.txt', { encoding: 'utf8', flag: 'a+' })
       .split('\n');
     proposals.pop(); // remove final new line
     console.log(proposals);
+    
 
     // Here  we query for the proposal votes
     // Note - if no votes have been created, it will just return an empty object
@@ -170,7 +174,8 @@ async function scrapeSnapshot() {
   let spaces: string[];
 
   try {
-    url = process.env.GRAPHQL_ENDPOINT;
+    // @dev  using the non-null assertion operator, `!`
+    url = process.env.GRAPHQL_ENDPOINT!;
     client = new GraphQLClient({ url });
   } catch (error) {
     console.log('Missing env variable $GRAPHQL_ENDPOINT');
@@ -178,7 +183,8 @@ async function scrapeSnapshot() {
   }
 
   try {
-    spaces = process.env.SPACES.split(',');
+    // we know spaces is defined in the .env file so we use `!` for explicit 
+    spaces = process.env.SPACES!.split(',');
   } catch (error) {
     console.log('Missing env variable $SPACES');
     return exit(1);
