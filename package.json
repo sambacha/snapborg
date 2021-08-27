@@ -1,5 +1,6 @@
 {
-  "name": "snapshot-governance",
+  "name": "snapborg",
+  "description": "backup snapshot governance voting and proposals",
   "version": "0.2.0",
   "license": "MIT",
   "author": "SEE CONTRIBUTORS",
